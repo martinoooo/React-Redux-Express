@@ -12,7 +12,8 @@ class TextFieldGruop extends React.Component {
       onChange,
       type,
       field,
-      label
+      label,
+      checkUserExists
     } = this.props;
     return (
       <div className={classnames("form-gruop",{"has-error":error})} >
@@ -20,6 +21,7 @@ class TextFieldGruop extends React.Component {
       <input
         value={value}
         onChange={onChange}
+        onBlur={checkUserExists}
         type={type}
         name={field}
         className="form-control"
@@ -38,6 +40,7 @@ TextFieldGruop.propTypes = {
   error: React.PropTypes.string,
   type: React.PropTypes.string.isRequired,
   onChange: React.PropTypes.func.isRequired,
+  checkUserExists: React.PropTypes.func
 }
 
 TextFieldGruop.defaultProps = {

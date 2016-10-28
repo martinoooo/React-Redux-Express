@@ -1,0 +1,110 @@
+import React from 'react';
+import TextFiledGruop from '../common/TextFieldGroup'
+import validateInput from '../../../server/shared/validations/login';
+import {
+	connect
+} from 'react-redux'
+import {
+	login
+} from '../../actions/authActions';
+import {
+	browserHistory
+} from 'react-router';
+
+class LoginForm extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			identifier: '',
+			errors: {},
+			password: '',
+			isLoading: false,
+		};
+
+		this.onChange = this.onChange.bind(this)
+		this.onSubmit = this.onSubmit.bind(this)
+	}
+	isValid() {
+		const {
+			errors,
+			isValid
+		} = validateInput(this.state);
+
+		if (!isValid) {
+			this.setState({
+				errors
+			})
+		}
+
+		return isValid
+	}
+	onChange(e) {
+		this.setState({
+			[e.target.name]: e.target.value
+		})
+	}
+	onSubmit(e) {
+		e.preventDefault();
+		if (this.isValid()) {
+			this.setState({
+				errors: {},
+				isLoading: true
+			});
+			this.props.login(this.state).then(
+				(res) => browserHistory.push('/'),
+				(err) => this.setState({
+					errors: err.response.data.errors,
+					isLoading: false
+				})
+			);
+		}
+	}
+	render() {
+		const {
+			errors,
+			identifier,
+			password,
+			isLoading
+		} = this.state;
+
+
+		return (
+			<form onSubmit={this.onSubmit}>
+				<h1>Login</h1>
+				{errors.form && <div className='alert alert-danger'>{errors.form}</div>}
+
+				<TextFiledGruop 
+					field="identifier"
+					label="Username/Email"
+					value={identifier}
+					error={errors.identifier}
+					onChange={this.onChange}
+				/>
+
+				<TextFiledGruop 
+					field="password"
+					label="password"
+					value={password}
+					error={errors.password}
+					onChange={this.onChange}
+					type="password"
+				/>
+
+
+		        <div className="from-group">
+		          <button disabled={isLoading} className="btn btn-primary btn-lg">
+		            Login
+		          </button>
+		        </div>
+			</form>
+		)
+	}
+}
+
+LoginForm.protoTypes = {
+	login: React.PropTypes.func.isRequired,
+};
+
+export default connect(null, {
+	login
+})(LoginForm);

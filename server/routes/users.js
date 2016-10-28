@@ -67,6 +67,24 @@ function validateInput(data, otherValidations) {
 	})*/
 }
 
+router.get('/:indentifier', (req, res) => {
+	//do not use promise
+	User.findOne({
+		attributes: ['username', 'email'],
+		where: {
+			$or: [{
+				email: req.params.indentifier
+			}, {
+				username: req.params.indentifier
+			}]
+		}
+	}).then(user => {
+		res.json({
+			user
+		});
+	})
+})
+
 router.post('/', (req, res) => {
 	validateInput(req.body, commonValidations).then(({
 		errors,
